@@ -383,12 +383,10 @@ if has_native_dist_support:
                 start_processes = mp.start_processes
             if init_method in [None, "env://"]:
                 init_method = "env://"
-                import os  # Ensure os is available locally if not at the top
-
                 if master_port is None:
-                    master_port = int(os.environ.get("MASTER_PORT", 2222))
+                    master_port = int(os.getenv("MASTER_PORT", 2222))
                 if master_addr is None:
-                    master_addr = os.environ.get("MASTER_ADDR", "127.0.0.1")
+                    master_addr = os.getenv("MASTER_ADDR", "127.0.0.1")
             elif master_addr is not None:
                 raise ValueError("master_addr should be None if init_method is provided other then 'env://'")
             elif master_port is not None:
