@@ -149,9 +149,10 @@ class _BasePrecisionRecall(_BaseClassification):
         fraction = self._numerator / (self._denominator + (self.eps if self._average != "samples" else 0))
 
         if self._average == "weighted":
-            _weight = idist.all_reduce(self._weight.clone())  # type: ignore[union-attr]
+            _weight = idist.all_reduce(cast(torch.Tensor, self._weight).clone())
             sum_of_weights = cast(torch.Tensor, _weight).sum() + self.eps
-            return ((fraction @ _weight) / sum_of_weights).item()  # type: ignore
+            val = (cast(torch.Tensor, fraction) @ cast(torch.Tensor, _weight)) / sum_of_weights
+            return cast(torch.Tensor, val).item()
         elif self._average == "micro" or self._average == "samples":
             return cast(torch.Tensor, fraction).item()
         elif self._average == "macro":
